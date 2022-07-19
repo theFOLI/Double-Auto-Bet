@@ -161,6 +161,8 @@ namespace Double_Auto_Bet
                 case Color.Black: driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[2]/div[2]/div/div[3]/div")).Click(); break;
             }
 
+            await WaitForButton();
+
             driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[3]/button")).Click();
 
             await WaitForChange();
@@ -169,6 +171,16 @@ namespace Double_Auto_Bet
             else if (currentBlock.currentColor.Equals("BLACK") && color.Equals(Color.Black)) return true;
             else return false;
 
+        }
+
+        public static async Task WaitForButton()
+        {
+            while (true)
+            {
+                if (driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[3]/button")).Text.Equals("Enter Round")) break;
+
+                Thread.Sleep(50);
+            }
         }
 
         public static async Task<bool> CheckBet(Color color)
