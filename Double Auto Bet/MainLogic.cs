@@ -1,7 +1,4 @@
-﻿using IronPython;
-using IronPython.Hosting;
-using Microsoft.Scripting.Hosting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -13,8 +10,8 @@ namespace Double_Auto_Bet
 {
     class MainLogic
     {
-        public static string user = "silviac@if.sc.usp.br";
-        public static string pass = "Pq5Ftq9I";
+        public static string user = "assisreginaldo1966@outlook.com";
+        public static string pass = "theFOLI3654";
         static async Task Main(string[] _)
         {
             await CommandHandler.initializeCommandsHandler();

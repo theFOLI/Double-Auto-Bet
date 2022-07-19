@@ -58,9 +58,9 @@ namespace Double_Auto_Bet
 
             Console.ForegroundColor = ConsoleColor.Cyan;
 
-            Console.WriteLine("We are monitoring telegram signals as ( " + SignalHandler.my.phone + " )");
+            Console.WriteLine("We are monitoring telegram signals as ( " + SignalHandler.my.first_name + " " + SignalHandler.my.last_name + " )");
 
-            Console.WriteLine("\nWe should be logged in to blaze.com as ( " + SignalHandler.my.first_name + " " + SignalHandler.my.last_name + " )");
+            Console.WriteLine("\nWe should be logged in to blaze.com as ( " + MainLogic.user + " )");
 
             Console.WriteLine("\nPlease ensure you are properly logged in to blaze.com and press any key");
 
@@ -97,24 +97,30 @@ namespace Double_Auto_Bet
         public static async Task startBettingRoutine(string startNum, Color startColor, Color betColor)
         {
             int currentBet = betStartingValue;
-            if (currentGale > 0) currentBet *= 8;
             bool isGreen = false;
+            if (currentGale > 0)
+            {
+                if (currentGale >= galeCount) currentGale = 0;
+                currentBet *= 8;
+            }
             if (await WaitForBet(startNum, startColor))
             {
-                Console.WriteLine("Bet starting point found \nBetting on " + betColor);
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("\nBet starting point found! \n\nBetting on " + betColor);
+                Console.ResetColor();
 
-                for (int i = 1; i < 3; i++)
+                for (int i = 0; i < 3; i++)
                 {
-                    Console.WriteLine("betting R$" + currentBet + " on " + betColor);
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine("\nbetting R$" + currentBet + " on " + betColor);
+                    Console.ResetColor();
 
-                    await WaitForChange();
-                    await bet(betColor, currentBet);
-                    bool hit = await CheckBet(betColor);
+                    bool hit = await bet(betColor, currentBet);
 
                     if (hit == true)
                     {
                         Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine("GREEN");
+                        Console.WriteLine("\nGREEN");
                         Console.ResetColor();
                         isGreen = true;
                         break;
@@ -123,19 +129,27 @@ namespace Double_Auto_Bet
                     {
                         currentBet *= 2;
                         Console.ForegroundColor = ConsoleColor.Cyan;
-                        Console.WriteLine("Increasing bet to R$" + currentBet);
+                        if(i != 2) Console.WriteLine("\nIncreasing bet to R$" + currentBet);
                         Console.ResetColor();
                     }
                 }
 
-                if (!isGreen && currentGale < galeCount)
+                if (!isGreen)
                 {
-                    currentGale += 1;
+
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("\nRED");
+                    Console.ResetColor();
+
+                    if (currentGale < galeCount)
+                    {
+                        currentGale += 1;
+                    }
                 }
             }
         }
 
-        public static async Task bet(Color color, int value)
+        public static async Task<bool> bet(Color color, int value)
         {
             driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[2]/div[1]/div/div[1]/input")).SendKeys(value.ToString());
 
@@ -147,22 +161,14 @@ namespace Double_Auto_Bet
                 case Color.Black: driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[2]/div[2]/div/div[3]/div")).Click(); break;
             }
 
-            switch (color)
-            {
-                case Color.Red:
-                    if (driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[2]/div[2]/div/div[1]/div[1]/div/div")).GetAttribute("class").Equals("sm-box red"))
-                    {
-                        driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[3]/button")).Click();
-                    }
-                    break;
-                case Color.Black:
-                    if (driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[2]/div[2]/div/div[1]/div[1]/div/div")).GetAttribute("class").Equals("sm-box black"))
-                    {
-                        driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[3]/button")).Click();
-                    }
-                    break;
+            driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[3]/button")).Click();
 
-            }
+            await WaitForChange();
+
+            if (currentBlock.currentColor.Equals("RED") && color.Equals(Color.Red)) return true;
+            else if (currentBlock.currentColor.Equals("BLACK") && color.Equals(Color.Black)) return true;
+            else return false;
+
         }
 
         public static async Task<bool> CheckBet(Color color)
@@ -210,11 +216,10 @@ namespace Double_Auto_Bet
             {
                 IWebElement element = driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[2]/div[2]/div/div[1]/div[1]/div/div"));
 
-                if (lastHashCode != e.GetHashCode()) break;
+                if (lastHashCode != element.GetHashCode()) break;
 
                 Thread.Sleep(100);
-            }
-            Console.WriteLine("rolou");
+            }            
         }
 
         public static void blazeMonitor()
@@ -244,7 +249,7 @@ namespace Double_Auto_Bet
                     if (currentColor.Equals(Color.Red)) currentBlock = ("RED", currentNumber);
 
 
-                    Console.WriteLine(currentBlock);
+                    Console.WriteLine("\nBlaze rolled: " + currentBlock);
 
                     lastHashCode = element.GetHashCode();
                     Thread.Sleep(12500);

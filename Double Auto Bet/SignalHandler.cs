@@ -62,7 +62,7 @@ namespace Double_Auto_Bet
 
                             Console.ForegroundColor = ConsoleColor.Yellow;
                             Console.WriteLine("\n" + "Sinal confirmado" + "\n");
-                            Console.ResetColor();
+                            
 
                             string[] lines = m.message.Split('\n');
 
@@ -82,8 +82,9 @@ namespace Double_Auto_Bet
                                 Console.WriteLine("Were betting on " + betColor + " after Black (" + startNumber + ")");
                             }
 
+                            Console.ResetColor();
 
-                            BlazeHandler.startBettingRoutine(startNumber, startColor, betColor);
+                            await BlazeHandler.startBettingRoutine(startNumber, startColor, betColor);
                         }
                     }
                     else if (m.Peer.ID.Equals(5536625825)) Console.WriteLine("\n" + m.message + " SOU O MARCO" + "\n");
