@@ -29,11 +29,6 @@ namespace Double_Auto_Bet
         public static int currentBet;
         public static int lastHashCode;
 
-        static Color awaitForColor;
-        static string awaitForNumber;
-
-        public static string balance;
-
         public static int betStartingValue;
         public static int galeCount;
 
@@ -154,11 +149,13 @@ namespace Double_Auto_Bet
                         Console.ResetColor();
                         isGreen = true;
 
+                        currentGale = 0;
+
                         if (isSimulating)
                         {
                             simulationBalance += currentBet * 2;
                             Console.ForegroundColor = ConsoleColor.DarkGreen;
-                            Console.WriteLine("\nSimulation balance at: ");
+                            Console.WriteLine("\nSimulation balance at: " + simulationBalance);
                             Console.ResetColor();
                         }
 
@@ -186,7 +183,7 @@ namespace Double_Auto_Bet
                     if (isSimulating)
                     {
                         Console.ForegroundColor = ConsoleColor.DarkGreen;
-                        Console.WriteLine("\nSimulation balance at: ");
+                        Console.WriteLine("\nSimulation balance at: " + simulationBalance);
                         Console.ResetColor();
                     }
 
@@ -234,8 +231,8 @@ namespace Double_Auto_Bet
 
             await WaitForChange();
 
-            if (currentBlock.currentColor.Equals("RED") && color.Equals(Color.Red)) return true;
-            else if (currentBlock.currentColor.Equals("BLACK") && color.Equals(Color.Black)) return true;
+            if (currentBlock.currentColor.Equals("RED") && color.Equals(Color.Red)) return false;
+            else if (currentBlock.currentColor.Equals("BLACK") && color.Equals(Color.Black)) return false;
             else return false;
 
         }

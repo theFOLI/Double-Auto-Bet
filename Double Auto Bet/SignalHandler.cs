@@ -74,7 +74,7 @@ namespace Double_Auto_Bet
             switch (messageBase)
             {
                 case Message m:
-                    if (m.Peer.ID.Equals(1511284561))//1511284561
+                    if (m.Peer.ID.Equals(5536625825))//1511284561
                     {
                         if (m.message.Contains("Sinal confirmado"))
                         {

@@ -34,11 +34,15 @@ namespace Double_Auto_Bet
 
                         BlazeHandler.isSimulating = true;
 
+                        Console.WriteLine("\nthe simulation has now started");
+
                         break;
 
                     case "stopsimulation":
 
                         BlazeHandler.isSimulating = false;
+
+                        Console.WriteLine("\nthe simulation has finished with a balance of " + BlazeHandler.simulationBalance);
 
                         break;
 
@@ -74,6 +78,21 @@ namespace Double_Auto_Bet
                         }
 
                         Console.WriteLine("\nBet value changed!");
+                        Console.ResetColor();
+
+                        break;
+
+                    case "galecount":
+
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("\nDigite o novo valor\n");
+
+                        while (!int.TryParse(Console.ReadLine(), out BlazeHandler.galeCount))
+                        {
+                            Console.WriteLine("\nPlease enter a valid value\n");
+                        }
+
+                        Console.WriteLine("\nGale count changed!");
                         Console.ResetColor();
 
                         break;
