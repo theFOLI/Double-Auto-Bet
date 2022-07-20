@@ -21,20 +21,36 @@ namespace Double_Auto_Bet
 
         public static ChromeDriver driver;
         public static Thread monitorThread;
+        public static Thread balanceMonitorThread;
 
         public static (string currentColor, string currentNumber) currentBlock;
         static Color awaitForColor;
         static string awaitForNumber;
 
+        public static string balance;
+
         public static int betStartingValue;
         public static int galeCount;
+
+        public static bool isDebugging = true;
+        public static bool isVerbose = true;
+        public static bool isShowingRolls = true;
+
 
         static int currentGale = 0;
 
 
         public static void start()
         {
-            driver = new ChromeDriver();
+            ChromeOptions options = new ChromeOptions();
+
+            options.AddArguments(new List<string>()
+            {
+              "--disable-gpu",
+              "--headless"
+            });
+
+            driver = new ChromeDriver(options);
             startBlaze();
         }
 
@@ -52,7 +68,7 @@ namespace Double_Auto_Bet
 
             driver.FindElement(By.XPath("/html/body/div[1]/main/div[3]/div/div[2]/div[2]/form/div[4]/button")).Click();
 
-            Thread.Sleep(2000);
+            Thread.Sleep(3000);
 
             Console.Clear();
 
@@ -62,9 +78,9 @@ namespace Double_Auto_Bet
 
             Console.WriteLine("\nWe should be logged in to blaze.com as ( " + MainLogic.user + " )");
 
-            Console.WriteLine("\nPlease ensure you are properly logged in to blaze.com and press any key");
+            //Console.WriteLine("\nPlease ensure you are properly logged in to blaze.com and press any key");
 
-            Console.ReadKey();
+            //Console.ReadKey();
 
             Console.WriteLine("\nPlease enter the base bet value\n");
 
@@ -80,17 +96,25 @@ namespace Double_Auto_Bet
                 Console.WriteLine("\nPlease enter a valid value\n");
             }
 
+            if (isDebugging) Console.WriteLine("\nThis is a test version and is running on debug mode\n\nno actual betting is done on debug mode\n\nto disable debug mode type (debug 0)");
+
+            if (isVerbose) Console.WriteLine("\nVerbose mode is on\n\nto disable verbose type (verbose 0)");
+
+            if (isShowingRolls) Console.WriteLine("\nShowing recent rolls\n\nto disable this type (rolls 0)");
+
             Console.WriteLine("\nThe magic will now commence");
 
             CommandHandler.commandsThread.Start();
 
             Console.ResetColor();
 
-            Thread.Sleep(4000);
+            Thread.Sleep(4000);            
 
-
+            balanceMonitorThread = new Thread(balanceMonitor);
             monitorThread = new Thread(blazeMonitor);
-            SignalHandler.listeningThread.Start();
+
+            balanceMonitorThread.Start();
+            SignalHandler.startListening();
             monitorThread.Start();
         }
 
@@ -105,9 +129,12 @@ namespace Double_Auto_Bet
             }
             if (await WaitForBet(startNum, startColor))
             {
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("\nBet starting point found! \n\nBetting on " + betColor);
-                Console.ResetColor();
+                if (isVerbose)
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine("\nBet starting point found! \n\nBetting on " + betColor);
+                    Console.ResetColor();
+                }
 
                 for (int i = 0; i < 3; i++)
                 {
@@ -117,7 +144,7 @@ namespace Double_Auto_Bet
 
                     bool hit = await bet(betColor, currentBet);
 
-                    if (hit == true)
+                    if (hit)
                     {
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine("\nGREEN");
@@ -125,12 +152,15 @@ namespace Double_Auto_Bet
                         isGreen = true;
                         break;
                     }
-                    else if (hit == false)
+                    else if (!hit)
                     {
                         currentBet *= 2;
-                        Console.ForegroundColor = ConsoleColor.Cyan;
-                        if(i != 2) Console.WriteLine("\nIncreasing bet to R$" + currentBet);
-                        Console.ResetColor();
+                        if (isVerbose)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Cyan;
+                            if (i != 2) Console.WriteLine("\nIncreasing bet to R$" + currentBet);
+                            Console.ResetColor();
+                        }
                     }
                 }
 
@@ -163,13 +193,15 @@ namespace Double_Auto_Bet
 
             await WaitForButton();
 
-            //driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[3]/button")).Click();
-
-            Console.WriteLine("clicked");
+            if (!isDebugging) driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[3]/button")).Click();
+            else if (isVerbose)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("\nclicked");
+                Console.ResetColor();
+            }
 
             await WaitForChange();
-
-            Thread.Sleep(2500);
 
             if (currentBlock.currentColor.Equals("RED") && color.Equals(Color.Red)) return true;
             else if (currentBlock.currentColor.Equals("BLACK") && color.Equals(Color.Black)) return true;
@@ -187,15 +219,7 @@ namespace Double_Auto_Bet
 
                 Thread.Sleep(50);
             }
-        }
-
-        public static async Task<bool> CheckBet(Color color)
-        {
-            await WaitForChange();
-            if (currentBlock.currentColor.Equals("WHITE")) return false;
-            else if (color.Equals(Color.Red) && currentBlock.currentColor.Equals("RED")) { Console.WriteLine("Checkbet retornou true"); return true; }
-            else if (color.Equals(Color.Black) && currentBlock.currentColor.Equals("BLACK")) { Console.WriteLine("Checkbet retornou true"); return true; }
-            else return false;
+            Thread.Sleep(100);
         }
 
         public static async Task<bool> WaitForBet(string startNumber, Color startColor)
@@ -226,18 +250,15 @@ namespace Double_Auto_Bet
 
         public static async Task WaitForChange()
         {
-            IWebElement e = driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[2]/div[2]/div/div[1]/div[1]/div/div"));
-            int lastHashCode = e.GetHashCode();
-
+            (string lastColor, string lastNum) lastBlock = currentBlock;
 
             while (true)
-            {
-                IWebElement element = driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[2]/div[2]/div/div[1]/div[1]/div/div"));
-
-                if (lastHashCode != element.GetHashCode()) break;
+            {                
+                if (lastBlock != currentBlock) break;                
 
                 Thread.Sleep(100);
             }            
+            Thread.Sleep(3000);
         }
 
         public static void blazeMonitor()
@@ -267,12 +288,37 @@ namespace Double_Auto_Bet
                     if (currentColor.Equals(Color.Red)) currentBlock = ("RED", currentNumber);
 
 
-                    Console.WriteLine("\nBlaze rolled: " + currentBlock);
+                    if (isShowingRolls)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.WriteLine("\nBlaze rolled: " + currentBlock);
+                        Console.ResetColor();
+                    }
 
                     lastHashCode = element.GetHashCode();
                     Thread.Sleep(12500);
                 }
                 Thread.Sleep(2000);
+            }
+        }
+
+        public static void balanceMonitor()
+        {
+            string currentBalance = driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[2]/div/div/div[2]/div/div[1]/div/a/div/div/div[1]")).Text;
+
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.WriteLine("\nStarting balance at: " + currentBalance);
+            Console.ResetColor();
+
+            while (true)
+            {
+                if (currentBalance != driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[2]/div/div/div[2]/div/div[1]/div/a/div/div/div[1]")).Text)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkGreen;
+                    Console.WriteLine("\nBalance currently at: " + currentBalance);
+                    Console.ResetColor();
+                }
+                Thread.Sleep(1000);
             }
         }
     }

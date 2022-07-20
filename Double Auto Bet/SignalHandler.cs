@@ -14,7 +14,6 @@ namespace Double_Auto_Bet
     {
         public static User my;
         static Client client;
-        public static Thread listeningThread;
         static readonly Dictionary<long, User> Users = new Dictionary<long, User>();
         static readonly Dictionary<long, ChatBase> Chats = new Dictionary<long, ChatBase>();
         public static async Task startTelegramHandler()
@@ -32,18 +31,13 @@ namespace Double_Auto_Bet
             WTelegram.Helpers.Log = (lvl, str) => { };
             Console.WriteLine("we are now monitoring " + chats.chats[1511284561].Title);
 
-            listeningThread = new Thread(startListening);
+            startListening();
         }
 
         public static void startListening()
         {
             //get state
             client.Update += Client_Update;
-
-            while (true)
-            {
-                Thread.Sleep(200);
-            }
         }
 
 
@@ -61,7 +55,7 @@ namespace Double_Auto_Bet
                             Color startColor = Color.Black;
 
                             Console.ForegroundColor = ConsoleColor.Yellow;
-                            Console.WriteLine("\n" + "Sinal confirmado" + "\n");
+                            Console.WriteLine("\nSinal confirmado\n");
                             
 
                             string[] lines = m.message.Split('\n');

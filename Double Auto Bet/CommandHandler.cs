@@ -53,8 +53,52 @@ namespace Double_Auto_Bet
                         }
 
                         Console.WriteLine("\nBet value changed!");
+                        Console.ResetColor();
 
                         break;
+
+                    case "debug 0":
+                        BlazeHandler.isDebugging = false;
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("\nDebug mode off\n");
+                        Console.ResetColor();                   
+                        break;
+
+                    case "debug 1":
+                        BlazeHandler.isDebugging = true;
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("\nDebug mode on\n");
+                        Console.ResetColor();
+                        break;
+
+                    case "verbose 0":
+                        BlazeHandler.isVerbose = false;
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("\nVerbose mode off\n");
+                        Console.ResetColor();
+                        break;
+
+                    case "verbose 1":
+                        BlazeHandler.isVerbose = true;
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("\nVerbose mode on\n");
+                        Console.ResetColor();
+                        break;
+
+                    case "rolls 0":
+                        BlazeHandler.isShowingRolls = false;
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("\nNo longer showing rolls\n");
+                        Console.ResetColor();
+                        break;
+
+                    case "rolls 1":
+                        BlazeHandler.isShowingRolls = true;
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("\nShowing Rolls\n");
+                        Console.ResetColor();
+                        break;
+
 
                     default: Console.WriteLine("( " + command + " ) is not a valid command"); break;
                 }
