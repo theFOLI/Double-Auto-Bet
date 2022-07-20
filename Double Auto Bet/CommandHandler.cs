@@ -25,7 +25,7 @@ namespace Double_Auto_Bet
                     case "startsimulation":
 
                         Console.ForegroundColor = ConsoleColor.Cyan;
-                        Console.WriteLine("\nPlease enter a starting balance for your simulation");
+                        Console.WriteLine("\nPlease enter a starting balance for your simulation\n");
 
                         while (!int.TryParse(Console.ReadLine(), out BlazeHandler.simulationBalance))
                         {

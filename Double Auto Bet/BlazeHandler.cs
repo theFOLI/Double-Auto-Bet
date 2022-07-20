@@ -231,8 +231,8 @@ namespace Double_Auto_Bet
 
             await WaitForChange();
 
-            if (currentBlock.currentColor.Equals("RED") && color.Equals(Color.Red)) return false;
-            else if (currentBlock.currentColor.Equals("BLACK") && color.Equals(Color.Black)) return false;
+            if (currentBlock.currentColor.Equals("RED") && color.Equals(Color.Red)) return true;
+            else if (currentBlock.currentColor.Equals("BLACK") && color.Equals(Color.Black)) return true;
             else return false;
 
         }
