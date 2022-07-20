@@ -10,7 +10,7 @@ namespace Double_Auto_Bet
     {
         public static Thread commandsThread;
 
-        public static async void initializeCommandsHandler()
+        public static void initializeCommandsHandler()
         {
             commandsThread = new Thread(commandsListener);
         }
@@ -22,6 +22,27 @@ namespace Double_Auto_Bet
                 string command = Console.ReadLine().ToLower();
                 switch (command)
                 {
+                    case "startsimulation":
+
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine("\nPlease enter a starting balance for your simulation");
+
+                        while (!int.TryParse(Console.ReadLine(), out BlazeHandler.simulationBalance))
+                        {
+                            Console.WriteLine("\nPlease enter a valid value\n");
+                        }
+
+                        BlazeHandler.isSimulating = true;
+
+                        break;
+
+                    case "stopsimulation":
+
+                        BlazeHandler.isSimulating = false;
+
+                        break;
+
+
                     case "clear":
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("This will clear the whole log\n" +

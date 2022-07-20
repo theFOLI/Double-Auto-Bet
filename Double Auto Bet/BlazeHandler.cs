@@ -19,6 +19,8 @@ namespace Double_Auto_Bet
     class BlazeHandler
     {
 
+        public static int simulationBalance;        
+
         public static ChromeDriver driver;
         public static Thread monitorThread;
         public static Thread balanceMonitorThread;
@@ -38,6 +40,7 @@ namespace Double_Auto_Bet
         public static bool isDebugging = true;
         public static bool isVerbose = true;
         public static bool isShowingRolls = true;
+        public static bool isSimulating = false;
 
 
         static int currentGale = 0;
@@ -142,12 +145,23 @@ namespace Double_Auto_Bet
 
                     bool hit = await bet(betColor, currentBet);
 
+                    if (isSimulating) simulationBalance -= currentBet;
+
                     if (hit)
                     {
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine("\nGREEN");
                         Console.ResetColor();
                         isGreen = true;
+
+                        if (isSimulating)
+                        {
+                            simulationBalance += currentBet * 2;
+                            Console.ForegroundColor = ConsoleColor.DarkGreen;
+                            Console.WriteLine("\nSimulation balance at: ");
+                            Console.ResetColor();
+                        }
+
                         break;
                     }
                     else if (!hit)
@@ -168,6 +182,13 @@ namespace Double_Auto_Bet
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("\nRED");
                     Console.ResetColor();
+
+                    if (isSimulating)
+                    {
+                        Console.ForegroundColor = ConsoleColor.DarkGreen;
+                        Console.WriteLine("\nSimulation balance at: ");
+                        Console.ResetColor();
+                    }
 
                     if (currentGale < galeCount)
                     {
