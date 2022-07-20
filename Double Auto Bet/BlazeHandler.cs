@@ -163,9 +163,13 @@ namespace Double_Auto_Bet
 
             await WaitForButton();
 
-            driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[3]/button")).Click();
+            //driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[3]/button")).Click();
+
+            Console.WriteLine("clicked");
 
             await WaitForChange();
+
+            Thread.Sleep(2500);
 
             if (currentBlock.currentColor.Equals("RED") && color.Equals(Color.Red)) return true;
             else if (currentBlock.currentColor.Equals("BLACK") && color.Equals(Color.Black)) return true;

@@ -41,6 +41,21 @@ namespace Double_Auto_Bet
 
                         break;
 
+                    case "changebet":
+                    case "betvalue":
+
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("\nDigite o novo valor\n");
+
+                        while (!int.TryParse(Console.ReadLine(), out BlazeHandler.betStartingValue))
+                        {
+                            Console.WriteLine("\nPlease enter a valid value\n");
+                        }
+
+                        Console.WriteLine("\nBet value changed!");
+
+                        break;
+
                     default: Console.WriteLine("( " + command + " ) is not a valid command"); break;
                 }
             }
