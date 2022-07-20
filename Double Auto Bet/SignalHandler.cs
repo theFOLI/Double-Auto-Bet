@@ -42,7 +42,7 @@ namespace Double_Auto_Bet
         {
             //get state
             client.Update += Client_Update;
-            client.PingInterval = 5;
+            client.PingInterval = 10;
 
             while (true)
             {
@@ -74,7 +74,7 @@ namespace Double_Auto_Bet
             switch (messageBase)
             {
                 case Message m:
-                    if (m.Peer.ID.Equals(1511284561))
+                    if (m.Peer.ID.Equals(5536625825))//1511284561
                     {
                         if (m.message.Contains("Sinal confirmado"))
                         {
@@ -112,15 +112,17 @@ namespace Double_Auto_Bet
                     break;
             }
         }
-        private static void Client_Update(IObject arg)
+        private static async void Client_Update(IObject arg)
         {
             if (!(arg is UpdatesBase updates)) return;
             updates.CollectUsersChats(Users, Chats);
             foreach (var update in updates.UpdateList)
+            {
                 switch (update)
                 {
-                    case UpdateNewMessage unm: readMessage(unm.message); break;
+                    case UpdateNewMessage unm: await readMessage(unm.message); break;
                 }
+            }
         }
 
         static string Config(string what)

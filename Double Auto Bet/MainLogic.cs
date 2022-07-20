@@ -14,7 +14,7 @@ namespace Double_Auto_Bet
         public static string pass = "theFOLI3654";
         static async Task Main(string[] _)
         {
-            await CommandHandler.initializeCommandsHandler();
+            CommandHandler.initializeCommandsHandler();
             await SignalHandler.startTelegramHandler();
             BlazeHandler.start();
         }

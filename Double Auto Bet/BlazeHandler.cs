@@ -24,7 +24,9 @@ namespace Double_Auto_Bet
         public static Thread balanceMonitorThread;
 
         public static (string currentColor, string currentNumber) currentBlock;
+        public static int currentBet;
         public static int lastHashCode;
+
         static Color awaitForColor;
         static string awaitForNumber;
 
@@ -120,13 +122,9 @@ namespace Double_Auto_Bet
 
         public static async Task startBettingRoutine(string startNum, Color startColor, Color betColor)
         {
-            int currentBet = betStartingValue;
+            if (currentGale == 0) currentBet = betStartingValue;
             bool isGreen = false;
-            if (currentGale > 0)
-            {
-                if (currentGale >= galeCount) currentGale = 0;
-                currentBet *= 8;
-            }
+
             if (await WaitForBet(startNum, startColor))
             {
                 if (isVerbose)
@@ -175,25 +173,37 @@ namespace Double_Auto_Bet
                     {
                         currentGale += 1;
                     }
+                    else
+                    {
+                        currentGale = 0;                        
+                    }
                 }
             }
         }
 
         public static async Task<bool> bet(Color color, int value)
         {
-            driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[2]/div[1]/div/div[1]/input")).SendKeys(value.ToString());
-
-            Thread.Sleep(500);
-
             switch (color)
             {
-                case Color.Red: driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[2]/div[2]/div/div[1]/div")).Click(); break;
-                case Color.Black: driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[2]/div[2]/div/div[3]/div")).Click(); break;
+                case (Color.Red):
+                    driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[2]/div[2]/div/div[1]/div")).Click();
+                    break;
+                case (Color.Black):
+                    driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[2]/div[2]/div/div[3]/div")).Click();
+                    break;
+                default:
+                    Console.WriteLine("the method bet() did not receive a valid color to bet on");
+                    break;
+            }           
+
+            await Task.Delay(150);
+
+            if (!isDebugging)
+            {
+                driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[2]/div[1]/div/div[1]/input")).SendKeys(value.ToString());
+                await WaitForButton();
+                driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[3]/button")).Click();
             }
-
-            await WaitForButton();
-
-            if (!isDebugging) driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[3]/button")).Click();
             else if (isVerbose)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
@@ -217,9 +227,9 @@ namespace Double_Auto_Bet
                     || driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[3]/button")).Text.Equals("Começar o jogo")
                     ) break;
 
-                Thread.Sleep(50);
+                await Task.Delay(50);
             }
-            Thread.Sleep(100);
+            await Task.Delay(100);
         }
 
         public static async Task<bool> WaitForBet(string startNumber, Color startColor)
@@ -243,7 +253,7 @@ namespace Double_Auto_Bet
                 }
                 else if (currentBlock == targetBlock) return true;
 
-                Thread.Sleep(100);
+                await Task.Delay(100);
             }
             return false;
         }
@@ -254,11 +264,12 @@ namespace Double_Auto_Bet
 
             while (true)
             {                
-                if (HashCode != lastHashCode) break;                
+                if (HashCode != lastHashCode) break;
 
-                Thread.Sleep(100);
-            }            
-            Thread.Sleep(3000);
+
+                await Task.Delay(50);
+            }
+            await Task.Delay(300);
         }
 
         public static void blazeMonitor()
@@ -296,9 +307,9 @@ namespace Double_Auto_Bet
                     }
 
                     lastHashCode = element.GetHashCode();
-                    Thread.Sleep(12500);
+                    Thread.Sleep(11000);
                 }
-                Thread.Sleep(2000);
+                Thread.Sleep(1000);
             }
         }
 

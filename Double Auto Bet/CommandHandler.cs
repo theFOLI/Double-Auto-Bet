@@ -10,7 +10,7 @@ namespace Double_Auto_Bet
     {
         public static Thread commandsThread;
 
-        public static async Task initializeCommandsHandler()
+        public static async void initializeCommandsHandler()
         {
             commandsThread = new Thread(commandsListener);
         }
