@@ -24,6 +24,7 @@ namespace Double_Auto_Bet
         public static Thread balanceMonitorThread;
 
         public static (string currentColor, string currentNumber) currentBlock;
+        public static int lastHashCode;
         static Color awaitForColor;
         static string awaitForNumber;
 
@@ -47,7 +48,7 @@ namespace Double_Auto_Bet
             options.AddArguments(new List<string>()
             {
               "--disable-gpu",
-              "--headless"
+              //"--headless"
             });
 
             driver = new ChromeDriver(options);
@@ -57,14 +58,14 @@ namespace Double_Auto_Bet
         static void startBlaze()
         {
             driver.Navigate().GoToUrl("https://blaze.com/games/double?modal=auth&tab=login");
-            Thread.Sleep(4000);
-
+            Thread.Sleep(5000);
+            
             Console.WriteLine("logging in as " + MainLogic.user);
 
             driver.FindElement(By.XPath("/html/body/div[1]/main/div[3]/div/div[2]/div[2]/form/div[1]/div/input")).SendKeys(MainLogic.user);
-            Thread.Sleep(200);
+            Thread.Sleep(400);
             driver.FindElement(By.XPath("/html/body/div[1]/main/div[3]/div/div[2]/div[2]/form/div[2]/div/input")).SendKeys(MainLogic.pass);
-            Thread.Sleep(200);
+            Thread.Sleep(400);            
 
             driver.FindElement(By.XPath("/html/body/div[1]/main/div[3]/div/div[2]/div[2]/form/div[4]/button")).Click();
 
@@ -114,7 +115,6 @@ namespace Double_Auto_Bet
             monitorThread = new Thread(blazeMonitor);
 
             balanceMonitorThread.Start();
-            SignalHandler.startListening();
             monitorThread.Start();
         }
 
@@ -250,11 +250,11 @@ namespace Double_Auto_Bet
 
         public static async Task WaitForChange()
         {
-            (string lastColor, string lastNum) lastBlock = currentBlock;
+            int HashCode = lastHashCode;
 
             while (true)
             {                
-                if (lastBlock != currentBlock) break;                
+                if (HashCode != lastHashCode) break;                
 
                 Thread.Sleep(100);
             }            
@@ -265,7 +265,7 @@ namespace Double_Auto_Bet
         {
             Color currentColor = Color.Black;
             IWebElement e = driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[2]/div[2]/div/div[1]/div[1]/div/div"));
-            int lastHashCode = e.GetHashCode();
+            lastHashCode = e.GetHashCode();
             string currentNumber;
 
             while (true)
@@ -304,7 +304,7 @@ namespace Double_Auto_Bet
 
         public static void balanceMonitor()
         {
-            string currentBalance = driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[2]/div/div/div[2]/div/div[1]/div/a/div/div/div[1]")).Text;
+            string currentBalance = driver.FindElement(By.ClassName("currency")).Text;
 
             Console.ForegroundColor = ConsoleColor.DarkGreen;
             Console.WriteLine("\nStarting balance at: " + currentBalance);
@@ -312,13 +312,14 @@ namespace Double_Auto_Bet
 
             while (true)
             {
-                if (currentBalance != driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[2]/div/div/div[2]/div/div[1]/div/a/div/div/div[1]")).Text)
+                if (currentBalance != driver.FindElement(By.ClassName("currency")).Text)
                 {
+                    currentBalance = driver.FindElement(By.ClassName("currency")).Text;
                     Console.ForegroundColor = ConsoleColor.DarkGreen;
                     Console.WriteLine("\nBalance currently at: " + currentBalance);
                     Console.ResetColor();
                 }
-                Thread.Sleep(1000);
+                Thread.Sleep(7500);
             }
         }
     }

@@ -13,6 +13,8 @@ namespace Double_Auto_Bet
     class SignalHandler
     {
         public static User my;
+        public static Thread teelegramConnectionKeeper;
+
         static Client client;
         static readonly Dictionary<long, User> Users = new Dictionary<long, User>();
         static readonly Dictionary<long, ChatBase> Chats = new Dictionary<long, ChatBase>();
@@ -31,13 +33,38 @@ namespace Double_Auto_Bet
             WTelegram.Helpers.Log = (lvl, str) => { };
             Console.WriteLine("we are now monitoring " + chats.chats[1511284561].Title);
 
-            startListening();
+            teelegramConnectionKeeper = new Thread(startListening);
+
+            teelegramConnectionKeeper.Start();
         }
 
-        public static void startListening()
+        public static async void startListening()
         {
             //get state
             client.Update += Client_Update;
+            client.PingInterval = 5;
+
+            while (true)
+            {
+                if (client.Disconnected)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("\nTelegram connection lost");
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine("\nReconnecting...");
+                    Console.ResetColor();
+                    await client.ConnectAsync();
+                    Thread.Sleep(200);
+                    if (!client.Disconnected)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine("\nTelegram connection reestablished");
+                        Console.ResetColor();
+                    }
+                }
+
+                Thread.Sleep(400);
+            }
         }
 
 
