@@ -40,7 +40,7 @@ namespace Double_Auto_Bet
 
         static void startBlaze()
         {
-            driver.Navigate().GoToUrl("https://blaze.com/pt/games/double?modal=auth&tab=login");
+            driver.Navigate().GoToUrl("https://blaze.com/games/double?modal=auth&tab=login");
             Thread.Sleep(4000);
 
             Console.WriteLine("logging in as " + MainLogic.user);
@@ -177,7 +177,9 @@ namespace Double_Auto_Bet
         {
             while (true)
             {
-                if (driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[3]/button")).Text.Equals("Enter Round")) break;
+                if (driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[3]/button")).Text.Equals("Enter Round") 
+                    || driver.FindElement(By.XPath("/html/body/div[1]/main/div[1]/div[4]/div/div[1]/div/div/div[1]/div[1]/div[1]/div[3]/button")).Text.Equals("Começar o jogo")
+                    ) break;
 
                 Thread.Sleep(50);
             }
