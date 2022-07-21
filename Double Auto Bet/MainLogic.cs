@@ -10,8 +10,8 @@ namespace Double_Auto_Bet
 {
     class MainLogic
     {
-        public static string user = "assisreginaldo1966@outlook.com";
-        public static string pass = "theFOLI3654";
+        public static string user = "ricardo.meglio@gmail.com";
+        public static string pass = "Ri.2846999";
         static async Task Main(string[] _)
         {
             CommandHandler.initializeCommandsHandler();

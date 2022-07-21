@@ -49,7 +49,7 @@ namespace Double_Auto_Bet
                 if (client.Disconnected)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("\nTelegram connection lost");
+                    Console.WriteLine("\nServer connection lost");
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.WriteLine("\nReconnecting...");
                     Console.ResetColor();
@@ -58,7 +58,7 @@ namespace Double_Auto_Bet
                     if (!client.Disconnected)
                     {
                         Console.ForegroundColor = ConsoleColor.Cyan;
-                        Console.WriteLine("\nTelegram connection reestablished");
+                        Console.WriteLine("\nServer connection reestablished");
                         Console.ResetColor();
                     }
                 }
