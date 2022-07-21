@@ -79,9 +79,9 @@ namespace Double_Auto_Bet
 
             Console.WriteLine("\nWe should be logged in to blaze.com as ( " + MainLogic.user + " )");
 
-            //Console.WriteLine("\nPlease ensure you are properly logged in to blaze.com and press any key");
+            Console.WriteLine("\nPlease ensure you are properly logged in to blaze.com and press any key");
 
-            //Console.ReadKey();
+            Console.ReadKey();
 
             Console.WriteLine("\nPlease enter the base bet value\n");
 
