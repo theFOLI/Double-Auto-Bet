@@ -10,10 +10,13 @@ using WTelegram;
 
 namespace Double_Auto_Bet
 {
-    class SignalHandler
+    static class SignalHandler
     {
         public static User my;
         public static Thread teelegramConnectionKeeper;
+
+        public static TimeSpan startBet;
+        public static TimeSpan endBet;
 
         static Client client;
         static readonly Dictionary<long, User> Users = new Dictionary<long, User>();
@@ -74,9 +77,29 @@ namespace Double_Auto_Bet
             switch (messageBase)
             {
                 case Message m:
+
+                    if (m.Peer.ID.Equals(1399031811) || m.Peer.ID.Equals(5536625825))
+                    {
+                        if (m.message.Contains("ATENÇÃO LISTA BRANCO"))
+                        {
+                            string[] lines = m.message.Split('\n');
+
+                            string firstWhite = Regex.Replace(lines[3], ".. ", "");
+                            string secondWhite = Regex.Replace(lines[4], ".. ", "");
+                            string thirdWhite = Regex.Replace(lines[5], ".. ", "");
+
+                            startBet = TimeSpan.Parse(firstWhite);
+                            endBet = TimeSpan.Parse(secondWhite);
+
+                            Console.WriteLine($"\nNext bet avoid times are from {firstWhite} to {thirdWhite}");
+
+                            Console.WriteLine($"\n{startBet} | {endBet}");
+                        }
+                    }
+
                     if (m.Peer.ID.Equals(1511284561))//1511284561
                     {
-                        if (m.message.Contains("Sinal confirmado"))
+                        if (m.message.Contains("Sinal confirmado") && !IsBetween(System.DateTime.Now, startBet, endBet))
                         {
                             Color betColor = Color.Black;
                             Color startColor = Color.Black;
@@ -112,6 +135,16 @@ namespace Double_Auto_Bet
                     break;
             }
         }
+        public static bool IsBetween(this DateTime now, TimeSpan start, TimeSpan end)
+        {
+            var time = now.TimeOfDay;
+            // Scenario 1: If the start time and the end time are in the same day.
+            if (start <= end)
+                return time >= start && time <= end;
+            // Scenario 2: The start time and end time is on different days.
+            return time >= start || time <= end;
+        }
+
         private static async void Client_Update(IObject arg)
         {
             if (!(arg is UpdatesBase updates)) return;

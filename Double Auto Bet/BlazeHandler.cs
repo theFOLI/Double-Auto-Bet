@@ -33,6 +33,7 @@ namespace Double_Auto_Bet
         public static int galeCount;
 
         public static bool isDebugging = true;
+        public static bool isWhiteEnabled = true;
         public static bool isVerbose = true;
         public static bool isShowingRolls = true;
         public static bool isSimulating = false;
@@ -201,6 +202,7 @@ namespace Double_Auto_Bet
 
         public static async Task<bool> bet(Color color, int value)
         {
+
             switch (color)
             {
                 case (Color.Red):

@@ -14,12 +14,12 @@ namespace Double_Auto_Bet
         public static string pass = "Ri.2846999";
         static async Task Main(string[] _)
         {
-            Console.ForegroundColor = ConsoleColor.Cyan;
+            /*Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("Please enter the email to log in to blaze");
             user = Console.ReadLine();
             Console.WriteLine("Please enter the password to log in to blaze");
             pass = Console.ReadLine();
-            Console.ResetColor();
+            Console.ResetColor();*/
 
 
             CommandHandler.initializeCommandsHandler();
